@@ -17,7 +17,7 @@ type Customer struct{
 }
 
 type CustomerHandlers struct{
-	service service.CustomerService
+	service Service.CustomerService
 }
 //handler functions
 func (ch *CustomerHandlers) getAllCustomers(w http.ResponseWriter, r *http.Request){
