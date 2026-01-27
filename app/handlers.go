@@ -4,7 +4,8 @@ import (
 	// "fmt"
 	"net/http"
 	"encoding/json"
-	"log"
+	"encoding/xml"
+
 )
 
 //Data Transfer Object

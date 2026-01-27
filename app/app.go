@@ -3,14 +3,11 @@ package app
 import (
 	// "fmt"
 	"net/http"
-	"encoding/json"
 	"log"
-	"encoding/xml"
-	"github.com/GURURAJ8/banking/app"
 )
 
-func start(){
+func Start(){
 	// http.HandleFunc("/", greet)
-	http.HandleFunc("/customers", handlers.getAllCustomers)
+	http.HandleFunc("/customers", getAllCustomers)
 	log.Fatal(http.ListenAndServe("localhost:8080", nil))
 }
