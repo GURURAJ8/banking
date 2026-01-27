@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"log"
 	"encoding/xml"
-	"github.com/GURURAJ8/banking/app/handlers.go"
+	"github.com/GURURAJ8/banking/app"
 )
 
 func start(){
