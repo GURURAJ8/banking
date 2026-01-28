@@ -3,9 +3,10 @@ package domain
 import (
 	"database/sql"
 	"time"
-"log"
+// "log"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/GURURAJ8/banking/errors"
+	"github.com/GURURAJ8/banking/logger"
 )
 
 type CustomerRepositoryDb struct {
@@ -19,7 +20,7 @@ func (c CustomerRepositoryDb) FindAll() ([]Customer, error) {
 FindAllSql := "SELECT customer_id, name, zipcode, city, status, date_of_birth FROM customers"
 rows, err := c.client.Query(FindAllSql)
 if err != nil {
-log.Println("Error while querying customers table " + err.Error())
+logger.Error("Error while querying customers table " + err.Error())
 return nil, err
 }
 defer rows.Close()
@@ -45,7 +46,7 @@ if err != nil {
 	if err == sql.ErrNoRows {
 		return nil, errors.NewNotFoundError("Customer not found")
 	}else{
-		log.Println("Error while querying customer by id " + err.Error())	
+		logger.Error("Error while querying customer by id " + err.Error())	
 		return nil, errors.NewUnexpectedError("Unexpected database error")
 	}
 }
