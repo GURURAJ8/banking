@@ -13,8 +13,8 @@ func Start(){
 	router:=mux.NewRouter()	
 
 	//wire up handlers
-	ch:=CustomerHandlers{Service.NewCustomerService(domain.NewCustomerRepositoryStub())}
-
+	// ch:=CustomerHandlers{Service.NewCustomerService(domain.NewCustomerRepositoryStub())}
+	ch:=CustomerHandlers{Service.NewCustomerService(domain.NewCustomerRepositoryDb())}	
 	//Define routes
 	router.HandleFunc("/customers", ch.getAllCustomers).Methods("GET")
 
