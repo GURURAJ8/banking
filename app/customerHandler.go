@@ -6,18 +6,11 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"strconv"
-	"fmt"
+	// "fmt"
 	"github.com/gorilla/mux"
 	"github.com/GURURAJ8/banking/Service"
 )
 
-//Data Transfer Object
-type Customer struct{
-	customer_id int `json:"customer_id" xml:"customer_id"`
-	Name string `json:"name" xml:"name"`
-	Zip string `json:"zip" xml:"zip"`
-	City string `json:"city" xml:"city"`
-}
 
 type CustomerHandlers struct{
 	service Service.CustomerService
@@ -54,12 +47,17 @@ func (ch *CustomerHandlers) getCustomerById(w http.ResponseWriter, r *http.Reque
 	id, _ := strconv.Atoi(idStr)
 	customer, err := ch.service.GetCustomerById(id)
 	if err != nil {
-		// http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		w.WriteHeader(err.Code)
-		fmt.Fprintf(w, err.Message)
+		WriteResponse(w, err.AsMessage(), "application/json", err.Code)	
 	}else {
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(customer)
-		w.WriteHeader(http.StatusOK)
+		WriteResponse(w, customer, "application/json", http.StatusOK)
 	}	
+}
+
+func WriteResponse(w http.ResponseWriter, data interface{}, contentType string, statusCode int) {
+	w.Header().Set("Content-Type", contentType)
+	w.WriteHeader(statusCode)
+	err := json.NewEncoder(w).Encode(data)
+	if err != nil {
+		panic(err)	
+	}
 }
