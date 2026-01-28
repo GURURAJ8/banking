@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"encoding/json"
 	"encoding/xml"
+	"strconv"
+	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/GURURAJ8/banking/Service"
 )
 
@@ -44,3 +47,25 @@ func (ch *CustomerHandlers) getAllCustomers(w http.ResponseWriter, r *http.Reque
 	}	
 }
 
+func (ch *CustomerHandlers) getCustomerById(w http.ResponseWriter, r *http.Request){
+	// Implementation for getting a customer by ID would go here
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid customer ID", http.StatusBadRequest)
+		return
+	}
+	customer, err := ch.service.GetCustomerById(id)
+	if err != nil {
+		// http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, err.Error())
+	}else {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(customer)
+		w.WriteHeader(http.StatusOK)
+	}
+	
+	
+}

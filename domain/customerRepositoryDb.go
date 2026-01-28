@@ -35,6 +35,18 @@ for rows.Next() {
 return customers, nil
 }
 
+func (c CustomerRepositoryDb) ById(id int) (*Customer, error) {		
+FindByIdSql := "SELECT customer_id, name, zipcode, city, status, date_of_birth FROM customers WHERE customer_id = ?"
+row := c.client.QueryRow(FindByIdSql, id)
+var customer Customer
+err := row.Scan(&customer.Id, &customer.Name, &customer.Zip, &customer.City, &customer.Status, &customer.DateofBirth)
+if err != nil {
+	log.Println("Error while querying customer by id " + err.Error())	
+	return nil, err
+}
+return &customer, nil
+}
+
 func NewCustomerRepositoryDb() CustomerRepositoryDb {
 	client, err := sql.Open("mysql", "root:SaRaPh11@tcp(localhost:3306)/banking")
 if err != nil {

@@ -17,6 +17,7 @@ func Start(){
 	ch:=CustomerHandlers{Service.NewCustomerService(domain.NewCustomerRepositoryDb())}	
 	//Define routes
 	router.HandleFunc("/customers", ch.getAllCustomers).Methods("GET")
+	router.HandleFunc("/customers/{id:[0-9]+}", ch.getCustomerById).Methods("GET")
 
 	//start server
 	fmt.Println("Starting server on :8080")
