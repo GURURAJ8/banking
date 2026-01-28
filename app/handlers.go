@@ -51,11 +51,7 @@ func (ch *CustomerHandlers) getCustomerById(w http.ResponseWriter, r *http.Reque
 	// Implementation for getting a customer by ID would go here
 	vars := mux.Vars(r)
 	idStr := vars["id"]
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid customer ID", http.StatusBadRequest)
-		return
-	}
+	id, _ := strconv.Atoi(idStr)
 	customer, err := ch.service.GetCustomerById(id)
 	if err != nil {
 		// http.Error(w, "Internal Server Error", http.StatusInternalServerError)

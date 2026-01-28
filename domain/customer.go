@@ -15,7 +15,6 @@ type Customer struct{
 type CustomerRepository interface{
 	// GetAllCustomers() []Customer
 	FindAll() ([]Customer, error)
-	ById(id int) (*Customer, errors.AppError)	
+	ById(id int) (*Customer, *errors.AppError)	
 }
 
-//mock adapter / stub implementation

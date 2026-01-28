@@ -1,6 +1,9 @@
 package errors
 
-import "errors"
+import(
+	"net/http"
+) 
+
 
 type AppError struct {
 	Code    int    `json:"code"`
@@ -8,9 +11,15 @@ type AppError struct {
 }
 
 func NewNotFoundError(message string) *AppError {
-	return &AppError{Message: message, Code: http.StatusNotFound}
+	return &AppError{
+		Message: message,
+		Code: http.StatusNotFound,
+	}
 }
 
 func NewUnexpectedError(message string) *AppError {		
-	return &AppError{Message: message, Code: http.StatusInternalServerError}
+	return &AppError{
+		Message: message, 
+		Code: http.StatusInternalServerError,
+	}
 }
