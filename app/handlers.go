@@ -59,13 +59,11 @@ func (ch *CustomerHandlers) getCustomerById(w http.ResponseWriter, r *http.Reque
 	customer, err := ch.service.GetCustomerById(id)
 	if err != nil {
 		// http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, err.Error())
+		w.WriteHeader(err.Code)
+		fmt.Fprintf(w, err.Message)
 	}else {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(customer)
 		w.WriteHeader(http.StatusOK)
-	}
-	
-	
+	}	
 }

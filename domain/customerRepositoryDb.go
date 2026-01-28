@@ -35,14 +35,18 @@ for rows.Next() {
 return customers, nil
 }
 
-func (c CustomerRepositoryDb) ById(id int) (*Customer, error) {		
+func (c CustomerRepositoryDb) ById(id int) (*Customer, errors.AppError) {		
 FindByIdSql := "SELECT customer_id, name, zipcode, city, status, date_of_birth FROM customers WHERE customer_id = ?"
 row := c.client.QueryRow(FindByIdSql, id)
 var customer Customer
 err := row.Scan(&customer.Id, &customer.Name, &customer.Zip, &customer.City, &customer.Status, &customer.DateofBirth)
 if err != nil {
+	if err == sql.ErrNoRows {
+		return nil, errors.NewNotFoundError("Customer not found")
+	}else{
 	log.Println("Error while querying customer by id " + err.Error())	
-	return nil, err
+	return nil, errors.NewUnexpectedError("Unexpected database error")
+	}
 }
 return &customer, nil
 }
