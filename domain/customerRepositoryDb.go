@@ -46,26 +46,17 @@ return customers, nil
 
 func (c CustomerRepositoryDb) ById(id int) (*Customer, *errors.AppError) {		
 FindByIdSql := "SELECT customer_id, name, zipcode, city, status, date_of_birth FROM customers WHERE customer_id = ?"
-// row := c.client.QueryRow(FindByIdSql, id)
 var customer Customer
 err := c.client.Get(&customer, FindByIdSql, id)
 if err != nil {
-	if err == sql.ErrNoRows {}
+	if err == sql.ErrNoRows {
 		return nil, errors.NewNotFoundError("Customer not found")
 	}else{
 		logger.Error("Error while querying customer by id " + err.Error())	
 		return nil, errors.NewUnexpectedError("Unexpected database error")
 	}
 
-// err := row.Scan(&customer.Id, &customer.Name, &customer.Zip, &customer.City, &customer.Status, &customer.DateofBirth)
-// if err != nil {
-// 	if err == sql.ErrNoRows {
-// 		return nil, errors.NewNotFoundError("Customer not found")
-// 	}else{
-// 		logger.Error("Error while querying customer by id " + err.Error())	
-// 		return nil, errors.NewUnexpectedError("Unexpected database error")
-// 	}
-// }
+}
 return &customer, nil
 }
 
