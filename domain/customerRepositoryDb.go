@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"time"
 // "log"
+	"os"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/GURURAJ8/banking/errors"
 	"github.com/GURURAJ8/banking/logger"
@@ -25,22 +26,6 @@ if err != nil {
 logger.Error("Error while querying customers table " + err.Error())
 return nil, err
 }
-// defer rows.Close()
-	
-
-// err = sqlx.StructScan(rows, &customers)
-// if err != nil {
-// 	logger.Error("Error while scanning customers " + err.Error())	
-// 	return nil, err
-// }
-// for rows.Next() {
-// 	var customer Customer
-// 	err := rows.Scan(&customer.Id, &customer.Name, &customer.Zip, &customer.City, &customer.Status, &customer.DateofBirth)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	customers = append(customers, customer)
-// }
 return customers, nil
 }
 
@@ -61,7 +46,12 @@ return &customer, nil
 }
 
 func NewCustomerRepositoryDb() CustomerRepositoryDb {
-	client, err := sqlx.Open("mysql", "root:SaRaPh11@tcp(localhost:3306)/banking")
+	dbUser :=os.Getenv("DB_USER")
+	dbPass :=os.Getenv("DB_PASS")
+	dbAddr :=os.Getenv("DB_ADDR")
+	dbPort :=os.Getenv("DB_PORT")
+	dbName :=os.Getenv("DB_NAME")
+	client, err := sqlx.Open("mysql", dbUser+":"+dbPass+"@tcp("+dbAddr+":"+dbPort+")/"+dbName)
 if err != nil {
 	panic(err)
 }
