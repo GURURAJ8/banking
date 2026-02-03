@@ -20,6 +20,7 @@ func (s DefaultAccountService)NewAccountService(r dto.NewAccountRequest) (*dto.N
 		return nil, err
 	}
 	domainAccount := domain.Account{
+		Id:          0, // The ID will be set by the repository after saving
 		CustomerId:  r.CustomerId,
 		AccountType: r.AccountType,
 		Amount:      r.Amount,

@@ -13,7 +13,7 @@ func (r NewAccountRequest) Validate() *errors.AppError {
 	if r.CustomerId <= 0 {
 		return errors.NewValidationError("CustomerId must be a positive integer")	
 	}
-	if strings.ToLower(r.AccountType) != "savings" || strings.ToLower(r.AccountType) != "checking" {
+	if strings.ToLower(r.AccountType) != "savings" && strings.ToLower(r.AccountType) != "checking" {
 		return errors.NewValidationError("AccountType must be either 'savings' or 'checking'")
 	}
 	if r.Amount < 5000 {

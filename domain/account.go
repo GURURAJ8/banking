@@ -5,7 +5,7 @@ import "github.com/GURURAJ8/banking/dto"
 //This file contains the domain model and repository interface for Customer
 
 type Account struct{
-	Id 			string  `db:"account_id"`
+	Id 			int64  `db:"account_id"`
 	CustomerId 	int     `db:"customer_id"`	
 	OpeningDate string  `db:"opening_date"`
 	AccountType string  `db:"account_type"`
