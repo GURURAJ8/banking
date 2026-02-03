@@ -1,5 +1,6 @@
 package Service	
 //This file contains the service layer for Customer
+// primary port of customer service layer
 import "github.com/GURURAJ8/banking/domain"
 import "github.com/GURURAJ8/banking/errors"
 import "github.com/GURURAJ8/banking/dto"
