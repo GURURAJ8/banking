@@ -1,6 +1,7 @@
 package domain
 
 import "github.com/GURURAJ8/banking/errors"
+import "github.com/GURURAJ8/banking/dto"
 //This file contains the domain model and repository interface for Customer
 type Customer struct{
 	Id 	int `db:"customer_id"`
@@ -18,3 +19,21 @@ type CustomerRepository interface{
 	ById(id int) (*Customer, *errors.AppError)	
 }
 
+func (c Customer) statusAsText() string {
+	if c.Status == "1" {
+		return "active"
+	}
+	return "inactive"
+}
+
+func (c *Customer) ToDto() dto.CustomerResponse {
+
+	return dto.CustomerResponse{
+		CustomerId:  c.Id,
+		Name:        c.Name,
+		Zipcode:     c.Zip,
+		City:        c.City,
+		Status:      c.statusAsText(),
+		DateOfBirth: c.DateofBirth,
+}
+}
