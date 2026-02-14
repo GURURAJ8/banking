@@ -1,24 +1,45 @@
 package domain
 
-import "github.com/GURURAJ8/banking/errors"
-import "github.com/GURURAJ8/banking/dto"
-//This file contains the domain model and repository interface for Customer
+import (
+	"github.com/ashishjuyal/banking/dto"
+	"github.com/ashishjuyal/banking-lib/errs"
+)
 
-type Account struct{
-	Id 			int64  `db:"account_id"`
-	CustomerId 	int     `db:"customer_id"`	
+const dbTSLayout = "2006-01-02 15:04:05"
+
+type Account struct {
+	AccountId   string  `db:"account_id"`
+	CustomerId  string  `db:"customer_id"`
 	OpeningDate string  `db:"opening_date"`
 	AccountType string  `db:"account_type"`
-	Amount 		float64 `db:"amount"`
-	Status 		string  `db:"status"`
+	Amount      float64 `db:"amount"`
+	Status      string  `db:"status"`
 }
 
-type AccountRepository interface{
-	Save(a Account) (*Account, *errors.AppError)
+func (a Account) ToNewAccountResponseDto() *dto.NewAccountResponse {
+	return &dto.NewAccountResponse{a.AccountId}
 }
 
-func (a Account) ToNewAccountResponseDto() dto.NewAccountResponse {
-	return dto.NewAccountResponse{
-		Account_id:  a.Id,
+//go:generate mockgen -destination=../mocks/domain/mockAccountRepository.go -package=domain github.com/ashishjuyal/banking/domain AccountRepository
+type AccountRepository interface {
+	Save(account Account) (*Account, *errs.AppError)
+	SaveTransaction(transaction Transaction) (*Transaction, *errs.AppError)
+	FindBy(accountId string) (*Account, *errs.AppError)
+}
+
+func (a Account) CanWithdraw(amount float64) bool {
+	if a.Amount < amount {
+		return false
+	}
+	return true
+}
+
+func NewAccount(customerId, accountType string, amount float64) Account {
+	return Account{
+		CustomerId:  customerId,
+		OpeningDate: dbTSLayout,
+		AccountType: accountType,
+		Amount:      amount,
+		Status:      "1",
 	}
 }

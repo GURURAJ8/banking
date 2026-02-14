@@ -2,47 +2,52 @@ package domain
 
 import (
 	"database/sql"
+	"github.com/ashishjuyal/banking-lib/errs"
+	"github.com/ashishjuyal/banking-lib/logger"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/GURURAJ8/banking/errors"
-	"github.com/GURURAJ8/banking/logger"
 	"github.com/jmoiron/sqlx"
 )
 
 type CustomerRepositoryDb struct {
-	//db connection details would go here
 	client *sqlx.DB
 }
 
-func (c CustomerRepositoryDb) FindAll() ([]Customer, error) {		
+func (d CustomerRepositoryDb) FindAll(status string) ([]Customer, *errs.AppError) {
+	var err error
+	customers := make([]Customer, 0)
 
-
-FindAllSql := "SELECT customer_id, name, zipcode, city, status, date_of_birth FROM customers"
-var customers []Customer
-err := c.client.Select(&customers, FindAllSql)
-if err != nil {
-logger.Error("Error while querying customers table " + err.Error())
-return nil, err
-}
-return customers, nil
-}
-
-func (c CustomerRepositoryDb) ById(id int) (*Customer, *errors.AppError) {		
-FindByIdSql := "SELECT customer_id, name, zipcode, city, status, date_of_birth FROM customers WHERE customer_id = ?"
-var customer Customer
-err := c.client.Get(&customer, FindByIdSql, id)
-if err != nil {
-	if err == sql.ErrNoRows {
-		return nil, errors.NewNotFoundError("Customer not found")
-	}else{
-		logger.Error("Error while querying customer by id " + err.Error())	
-		return nil, errors.NewUnexpectedError("Unexpected database error")
+	if status == "" {
+		findAllSql := "select customer_id, name, city, zipcode, date_of_birth, status from customers"
+		err = d.client.Select(&customers, findAllSql)
+	} else {
+		findAllSql := "select customer_id, name, city, zipcode, date_of_birth, status from customers where status = ?"
+		err = d.client.Select(&customers, findAllSql, status)
 	}
 
+	if err != nil {
+		logger.Error("Error while querying customers table " + err.Error())
+		return nil, errs.NewUnexpectedError("Unexpected database error")
+	}
+
+	return customers, nil
 }
-return &customer, nil
+
+func (d CustomerRepositoryDb) ById(id string) (*Customer, *errs.AppError) {
+	customerSql := "select customer_id, name, city, zipcode, date_of_birth, status from customers where customer_id = ?"
+
+	var c Customer
+	err := d.client.Get(&c, customerSql, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errs.NewNotFoundError("Customer not found")
+		} else {
+			logger.Error("Error while scanning customer " + err.Error())
+			return nil, errs.NewUnexpectedError("Unexpected database error")
+		}
+	}
+	return &c, nil
 }
 
 func NewCustomerRepositoryDb(dbClient *sqlx.DB) CustomerRepositoryDb {
-	
-	return CustomerRepositoryDb{client: dbClient}
+	return CustomerRepositoryDb{dbClient}
 }

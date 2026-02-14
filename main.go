@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/GURURAJ8/banking/app"
-	"github.com/GURURAJ8/banking/logger"
+	"github.com/ashishjuyal/banking/app"
 )
 
-func main(){
-	logger.Info("Starting banking application...")
+func main() {
+
 	app.Start()
+
 }

@@ -1,10 +1,10 @@
-package dto 
+package dto
 
 type CustomerResponse struct {
-	CustomerId   int    `json:"customer_id"`
-	Name         string `json:"name"`
-	Zipcode      string `json:"zipcode"`
-	City         string `json:"city"`
-	Status       string `json:"status"`
-	DateOfBirth  string `json:"date_of_birth"`
+	Id          string `json:"customer_id"`
+	Name        string `json:"full_name"`
+	City        string `json:"city"`
+	Zipcode     string `json:"zipcode"`
+	DateofBirth string `json:"date_of_birth"`
+	Status      string `json:"status"`
 }

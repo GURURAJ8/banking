@@ -1,2 +1,4 @@
-# Ignore all .exe files
-*.exe
+.idea/
+*.iml
+banking
+mocks/

@@ -1,39 +1,39 @@
 package domain
 
-import "github.com/GURURAJ8/banking/errors"
-import "github.com/GURURAJ8/banking/dto"
-//This file contains the domain model and repository interface for Customer
-type Customer struct{
-	Id 	int `db:"customer_id"`
-	Name string `db:"name"`
-	Zip string `db:"zipcode"`
-	City string `db:"city"`
-	Status string `db:"status"`		
-	DateofBirth string `db:"date_of_birth"`
-}
+import (
+	"github.com/ashishjuyal/banking/dto"
+	"github.com/ashishjuyal/banking-lib/errs"
+)
 
-//port interface
-type CustomerRepository interface{
-	// GetAllCustomers() []Customer
-	FindAll() ([]Customer, error)
-	ById(id int) (*Customer, *errors.AppError)	
+type Customer struct {
+	Id          string `db:"customer_id"`
+	Name        string
+	City        string
+	Zipcode     string
+	DateofBirth string `db:"date_of_birth"`
+	Status      string
 }
 
 func (c Customer) statusAsText() string {
-	if c.Status == "1" {
-		return "active"
+	statusAsText := "active"
+	if c.Status == "0" {
+		statusAsText = "inactive"
 	}
-	return "inactive"
+	return statusAsText
 }
 
-func (c *Customer) ToDto() dto.CustomerResponse {
-
+func (c Customer) ToDto() dto.CustomerResponse {
 	return dto.CustomerResponse{
-		CustomerId:  c.Id,
+		Id:          c.Id,
 		Name:        c.Name,
-		Zipcode:     c.Zip,
 		City:        c.City,
+		Zipcode:     c.Zipcode,
+		DateofBirth: c.DateofBirth,
 		Status:      c.statusAsText(),
-		DateOfBirth: c.DateofBirth,
+	}
 }
+
+type CustomerRepository interface {
+	FindAll(status string) ([]Customer, *errs.AppError)
+	ById(string) (*Customer, *errs.AppError)
 }

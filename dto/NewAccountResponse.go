@@ -1,4 +1,5 @@
-package dto 
+package dto
+
 type NewAccountResponse struct {
-	Account_id  int64  `json:"account_id"`
+	AccountId string `json:"account_id"`
 }

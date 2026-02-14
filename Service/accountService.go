@@ -1,41 +1,66 @@
-package Service
+package service
 
-//primary port of account service layer
-import "github.com/GURURAJ8/banking/domain"
-import "github.com/GURURAJ8/banking/errors"
-import "github.com/GURURAJ8/banking/dto"
-import "time"
+import (
+	"github.com/ashishjuyal/banking/domain"
+	"github.com/ashishjuyal/banking/dto"
+	"github.com/ashishjuyal/banking-lib/errs"
+	"time"
+)
 
-type AccountService interface{
-	NewAccountService(request dto.NewAccountRequest) (*dto.NewAccountResponse, *errors.AppError)
+const dbTSLayout = "2006-01-02 15:04:05"
+
+type AccountService interface {
+	NewAccount(request dto.NewAccountRequest) (*dto.NewAccountResponse, *errs.AppError)
+	MakeTransaction(request dto.TransactionRequest) (*dto.TransactionResponse, *errs.AppError)
 }
 
-type DefaultAccountService struct{
+type DefaultAccountService struct {
 	repo domain.AccountRepository
 }
 
-func (s DefaultAccountService)NewAccountService(r dto.NewAccountRequest) (*dto.NewAccountResponse, *errors.AppError) {
-	err := r.Validate()
+func (s DefaultAccountService) NewAccount(req dto.NewAccountRequest) (*dto.NewAccountResponse, *errs.AppError) {
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	account := domain.NewAccount(req.CustomerId, req.AccountType, req.Amount)
+	if newAccount, err := s.repo.Save(account); err != nil {
+		return nil, err
+	} else {
+		return newAccount.ToNewAccountResponseDto(), nil
+	}
+}
+
+func (s DefaultAccountService) MakeTransaction(req dto.TransactionRequest) (*dto.TransactionResponse, *errs.AppError) {
+	// incoming request validation
+	err := req.Validate()
 	if err != nil {
 		return nil, err
 	}
-	domainAccount := domain.Account{
-		Id:          0, // The ID will be set by the repository after saving
-		CustomerId:  r.CustomerId,
-		AccountType: r.AccountType,
-		Amount:      r.Amount,
-		OpeningDate: time.Now().Format("2006-01-02 15:04:05"), // This would typically be the current date
-		Status: "1",
+	// server side validation for checking the available balance in the account
+	if req.IsTransactionTypeWithdrawal() {
+		account, err := s.repo.FindBy(req.AccountId)
+		if err != nil {
+			return nil, err
+		}
+		if !account.CanWithdraw(req.Amount) {
+			return nil, errs.NewValidationError("Insufficient balance in the account")
+		}
 	}
-
-	newAccount, appErr := s.repo.Save(domainAccount)
-	if appErr != nil {
-		return nil, appErr
+	// if all is well, build the domain object & save the transaction
+	t := domain.Transaction{
+		AccountId:       req.AccountId,
+		Amount:          req.Amount,
+		TransactionType: req.TransactionType,
+		TransactionDate: time.Now().Format(dbTSLayout),
 	}
-	response := newAccount.ToNewAccountResponseDto()
+	transaction, appError := s.repo.SaveTransaction(t)
+	if appError != nil {
+		return nil, appError
+	}
+	response := transaction.ToDto()
 	return &response, nil
 }
 
-func NewAccountService(r domain.AccountRepository) DefaultAccountService{
-	return DefaultAccountService{r}
+func NewAccountService(repo domain.AccountRepository) DefaultAccountService {
+	return DefaultAccountService{repo}
 }
